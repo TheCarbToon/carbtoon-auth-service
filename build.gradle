@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'org.springframework.experimental.aot' version '0.11.1'
+//    id 'org.springframework.experimental.aot' version '0.11.1'
 }
 
 group = 'kr.springboot.dcinside.cartoon'
@@ -54,7 +54,7 @@ test {
     useJUnitPlatform()
 }
 
-bootBuildImage {
-    builder = 'paketobuildpacks/builder:tiny'
-    environment = ['BP_NATIVE_IMAGE': 'true']
-}
+//bootBuildImage {
+//    builder = 'paketobuildpacks/builder:tiny'
+//    environment = ['BP_NATIVE_IMAGE': 'true']
+//}
