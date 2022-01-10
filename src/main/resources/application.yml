@@ -1,9 +1,12 @@
 server:
-  port: 8081
+  port: 9001
 
 spring:
   application:
     name: auth-service
+  data:
+    mongodb:
+      database: cartoon_user
   cloud:
     gateway:
       discovery:
@@ -14,3 +17,20 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+#      defaultZone: http://172.30.1.11:8761/eureka
+
+security:
+  basic:
+    enable: false
+
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: "Bearer "
+#    expiration: 604800
+    expiration: 60
+    secret: /j7JOK1JQA+cqZhLQF7WVcOzrI0Et0pUZcjhe47ELqQ=
+
+  service:
+    username: d245ef53-5ad5-4216-9c56-89fe0f8302a0
+    password: ef919ae4-b893-4969-b782-57978180ad33
