@@ -1,12 +1,13 @@
 package kr.springboot.dcinside.cartoon.auth.config;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.messaging.Message;
 
@@ -30,6 +31,23 @@ public class KafkaProducerConfig {
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(configs);
+    }
+
+    @Bean
+    public ConsumerFactory<String, Message> consumerFactory() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_LOCATION);
+//        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
+        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaConsumerFactory<>(configs);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Message> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
     }
 
 }

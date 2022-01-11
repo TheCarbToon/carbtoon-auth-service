@@ -13,6 +13,7 @@ public class UserEventPayload {
 
     private String id;
     private String username;
+    private String password;
     private String email;
     private String displayName;
     private String profilePictureUrl;
@@ -20,8 +21,9 @@ public class UserEventPayload {
     private UserEventType eventType;
 
     @Builder
-    public UserEventPayload(String id, String username, String email, String displayName, String profilePictureUrl, String oldProfilePicUrl, UserEventType eventType) {
+    public UserEventPayload(String id, String username, String password, String email, String displayName, String profilePictureUrl, String oldProfilePicUrl, UserEventType eventType) {
         this.id = id;
+        this.password = password;
         this.username = username;
         this.email = email;
         this.displayName = displayName;

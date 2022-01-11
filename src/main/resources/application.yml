@@ -6,7 +6,8 @@ spring:
     name: auth-service
   data:
     mongodb:
-      database: cartoon_user
+      database: carbtoon_auth
+
   cloud:
     gateway:
       discovery:
@@ -27,8 +28,8 @@ security:
     uri: /auth/**
     header: Authorization
     prefix: "Bearer "
-#    expiration: 604800
-    expiration: 60
+    expiration: 604800
+#    expiration: 60
     secret: /j7JOK1JQA+cqZhLQF7WVcOzrI0Et0pUZcjhe47ELqQ=
 
   service:

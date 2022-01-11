@@ -4,10 +4,7 @@ import io.jsonwebtoken.Claims;
 import kr.springboot.dcinside.cartoon.auth.domain.CartoonUserDetails;
 import kr.springboot.dcinside.cartoon.auth.repo.UserRepository;
 import kr.springboot.dcinside.cartoon.auth.service.JwtTokenProvider;
-import kr.springboot.dcinside.cartoon.auth.service.UserService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +23,6 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
-//@NoArgsConstructor
 @Component
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 

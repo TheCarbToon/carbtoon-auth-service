@@ -7,6 +7,8 @@ public interface JwtTokenProvider {
 
     String generateToken(Authentication authentication);
 
+    String generateRefreshToken();
+
     Claims getClaimsFromJWT(String token);
 
     boolean validateToken(String authToken);

@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Getter
-public class UserEventKafkaStream {
+public class UserEventProducer {
 
     private KafkaTemplate<String, Message> kafkaTemplate;
-    private final String KAFKA_TOPIC = "cartoonUserChanged";
+    private final String KAFKA_TOPIC = "carbtoon.user.create";
 
-    public UserEventKafkaStream() {
+    public UserEventProducer() {
         this.kafkaTemplate = new KafkaProducerConfig().kafkaTemplate();
     }
 

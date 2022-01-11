@@ -1,6 +1,7 @@
 package kr.springboot.dcinside.cartoon.auth.service.impl;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import kr.springboot.dcinside.cartoon.auth.config.JwtConfig;
 import kr.springboot.dcinside.cartoon.auth.service.JwtTokenProvider;
@@ -10,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -65,4 +68,10 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
         return false;
     }
 
+    @Override
+    public String generateRefreshToken() {
+        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        String encodedKey = Base64.getEncoder().encodeToString(key.getEncoded());
+        return encodedKey;
+    }
 }

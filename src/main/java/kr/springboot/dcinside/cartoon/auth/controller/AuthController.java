@@ -1,24 +1,12 @@
 package kr.springboot.dcinside.cartoon.auth.controller;
 
-import kr.springboot.dcinside.cartoon.auth.domain.Profile;
-import kr.springboot.dcinside.cartoon.auth.domain.User;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignInRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignUpRequest;
-import kr.springboot.dcinside.cartoon.auth.dto.response.ApiResponse;
-import kr.springboot.dcinside.cartoon.auth.dto.response.JwtAuthenticationResponse;
-import kr.springboot.dcinside.cartoon.auth.exception.BadRequestException;
-import kr.springboot.dcinside.cartoon.auth.exception.EmailAlreadyExistsException;
-import kr.springboot.dcinside.cartoon.auth.exception.UsernameAlreadyExistsException;
-import kr.springboot.dcinside.cartoon.auth.service.JwtTokenProvider;
 import kr.springboot.dcinside.cartoon.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -33,10 +21,6 @@ public class AuthController {
 
     private final UserService userService;
 
-    private final AuthenticationManager authenticationManager;
-
-    private final JwtTokenProvider tokenProvider;
-
 
     /**
      * 로그인 & 토큰 발급
@@ -44,20 +28,10 @@ public class AuthController {
      * @return
      */
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody SignInRequest signInRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        signInRequest.getUsername(),
-                        signInRequest.getPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
-
+    public ResponseEntity<?> authenticateUser(
+            @Valid @RequestBody SignInRequest signInRequest) {
+        return ResponseEntity.ok(
+                userService.authenticateUser(signInRequest));
     }
 
     /**
@@ -66,33 +40,17 @@ public class AuthController {
      * @return
      */
     @PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        log.info("creating user {}", signUpRequest.getUsername());
-
-        User user = User
-                .builder()
-                .username(signUpRequest.getUsername())
-                .email(signUpRequest.getEmail())
-                .password(signUpRequest.getPassword())
-                .userProfile(Profile
-                        .builder()
-                        .displayName(signUpRequest.getName())
-                        .build())
-                .build();
-
-        try {
-            userService.registerUser(user);
-        } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException e) {
-            throw new BadRequestException(e.getMessage());
-        }
+    public ResponseEntity<?> createUser(
+            @Valid @RequestBody SignUpRequest signUpRequest) {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{username}")
-                .buildAndExpand(user.getUsername()).toUri();
+                .buildAndExpand(signUpRequest.getUsername()).toUri();
 
         return ResponseEntity
                 .created(location) // restful api location.... must
-                .body(new ApiResponse(true,"굿굿굿!"));
+                .body(userService.signUpUser(signUpRequest));
+
     }
 
     /**
@@ -101,7 +59,8 @@ public class AuthController {
      * @return
      */
     @GetMapping("/newtoken/{refreshToken}")
-    public ResponseEntity<?> newToken(@PathVariable String refreshToken) {
+    public ResponseEntity<?> newToken(
+            @PathVariable String refreshToken) {
         return ResponseEntity.ok(refreshToken);
     }
 
