@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaProducerConfig {
+public class KafkaConfig {
 
     private final String BOOTSTRAP_SERVERS_LOCATION = "localhost:9092";
 

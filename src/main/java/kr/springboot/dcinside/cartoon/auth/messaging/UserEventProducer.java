@@ -1,6 +1,6 @@
 package kr.springboot.dcinside.cartoon.auth.messaging;
 
-import kr.springboot.dcinside.cartoon.auth.config.KafkaProducerConfig;
+import kr.springboot.dcinside.cartoon.auth.config.KafkaConfig;
 import lombok.Getter;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.Message;
@@ -14,7 +14,7 @@ public class UserEventProducer {
     private final String KAFKA_TOPIC = "carbtoon.user.create";
 
     public UserEventProducer() {
-        this.kafkaTemplate = new KafkaProducerConfig().kafkaTemplate();
+        this.kafkaTemplate = new KafkaConfig().kafkaTemplate();
     }
 
     public void send(Message message) {
