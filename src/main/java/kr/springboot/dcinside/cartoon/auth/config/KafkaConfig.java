@@ -17,7 +17,9 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private final String BOOTSTRAP_SERVERS_LOCATION = "localhost:9092";
+    public final static String AUTH_TOPIC = "carbtoon.auth";
+
+    private final String BOOTSTRAP_SERVERS_LOCATION = "localhost:9094";
 
     @Bean
     public KafkaTemplate<String, Message> kafkaTemplate() {
@@ -28,26 +30,27 @@ public class KafkaConfig {
     public ProducerFactory<String, Message> producerFactory() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_LOCATION);
+        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "logstash");
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(configs);
     }
 
-    @Bean
-    public ConsumerFactory<String, Message> consumerFactory() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_LOCATION);
+//    @Bean
+//    public ConsumerFactory<String, Message> consumerFactory() {
+//        Map<String, Object> configs = new HashMap<>();
+//        configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_LOCATION);
 //        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "group_id");
-        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(configs);
-    }
+//        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        return new DefaultKafkaConsumerFactory<>(configs);
+//    }
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Message> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
-    }
+//    @Bean
+//    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
+//        ConcurrentKafkaListenerContainerFactory<String, Message> factory = new ConcurrentKafkaListenerContainerFactory<>();
+//        factory.setConsumerFactory(consumerFactory());
+//        return factory;
+//    }
 
 }

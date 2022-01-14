@@ -1,5 +1,6 @@
 package kr.springboot.dcinside.cartoon.auth.payload;
 
+import kr.springboot.dcinside.cartoon.auth.domain.User;
 import kr.springboot.dcinside.cartoon.auth.messaging.UserEventType;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,25 +12,40 @@ import lombok.Setter;
 @Setter
 public class UserEventPayload {
 
-    private String id;
-    private String username;
+    private String userId;
+    private String userName;
     private String password;
-    private String email;
+    private String userEmail;
     private String displayName;
     private String profilePictureUrl;
     private String oldProfilePicUrl;
     private UserEventType eventType;
 
     @Builder
-    public UserEventPayload(String id, String username, String password, String email, String displayName, String profilePictureUrl, String oldProfilePicUrl, UserEventType eventType) {
-        this.id = id;
+    public UserEventPayload(String userId, String userName, String password, String userEmail, String displayName, String profilePictureUrl, String oldProfilePicUrl, UserEventType eventType) {
+        this.userId = userId;
+        this.userName = userName;
         this.password = password;
-        this.username = username;
-        this.email = email;
+        this.userEmail = userEmail;
         this.displayName = displayName;
         this.profilePictureUrl = profilePictureUrl;
         this.oldProfilePicUrl = oldProfilePicUrl;
         this.eventType = eventType;
+    }
+
+    public static UserEventPayload convertTo(User user, UserEventType eventType) {
+
+        return UserEventPayload
+                .builder()
+                .eventType(eventType)
+                .userId(user.getId())
+                .password(user.getPassword())
+                .userName(user.getUsername())
+                .userEmail(user.getEmail())
+                .displayName(user.getUserProfile().getDisplayName())
+                .profilePictureUrl(user.getUserProfile().getProfilePictureUrl())
+                .build();
+
     }
 
 }

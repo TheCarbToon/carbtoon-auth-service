@@ -17,6 +17,9 @@ public class JwtAuthenticationResponse {
     @JsonProperty(value = "token_type")
     private String tokenType = "Bearer";
 
+    /**
+     * TODO
+     */
     @NonNull
     @JsonProperty(value = "refresh_token")
     private String refreshToken;
