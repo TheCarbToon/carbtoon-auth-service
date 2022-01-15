@@ -1,5 +1,6 @@
 package kr.springboot.dcinside.cartoon.auth.messaging;
 
-public enum UserEventType {
+@Deprecated
+public enum UserEventLogType {
     CREATED, UPDATED
 }

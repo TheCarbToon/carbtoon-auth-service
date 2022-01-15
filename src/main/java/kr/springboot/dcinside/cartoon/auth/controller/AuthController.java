@@ -1,6 +1,5 @@
 package kr.springboot.dcinside.cartoon.auth.controller;
 
-import kr.springboot.dcinside.cartoon.auth.domain.CartoonUserDetails;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignInRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignUpRequest;
 import kr.springboot.dcinside.cartoon.auth.service.UserService;
@@ -8,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -43,8 +41,7 @@ public class AuthController {
      */
     @PostMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createUser(
-            @Valid @RequestBody SignUpRequest signUpRequest,
-            @AuthenticationPrincipal CartoonUserDetails userDetails) {
+            @Valid @RequestBody SignUpRequest signUpRequest) {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/users/{username}")
@@ -52,7 +49,7 @@ public class AuthController {
 
         return ResponseEntity
                 .created(location) // restful api location.... must
-                .body(userService.signUpUser(signUpRequest, userDetails));
+                .body(userService.signUpUser(signUpRequest));
 
     }
 

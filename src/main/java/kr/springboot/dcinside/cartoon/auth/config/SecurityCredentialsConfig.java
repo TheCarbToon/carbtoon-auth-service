@@ -1,7 +1,6 @@
 package kr.springboot.dcinside.cartoon.auth.config;
 
 import kr.springboot.dcinside.cartoon.auth.domain.Role;
-import kr.springboot.dcinside.cartoon.auth.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +27,8 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
 
     private final JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter;
+
+    private final RequestAndResponseLoggingFilter loggingFilter;
 
     @Value("${security.service.username}")
     private String serviceUsername;

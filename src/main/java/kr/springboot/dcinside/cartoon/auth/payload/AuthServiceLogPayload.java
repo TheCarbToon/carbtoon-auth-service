@@ -1,62 +1,77 @@
 package kr.springboot.dcinside.cartoon.auth.payload;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import kr.springboot.dcinside.cartoon.auth.domain.User;
-import kr.springboot.dcinside.cartoon.auth.messaging.AuthServiceLogType;
 import lombok.*;
+
+import java.util.Map;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class AuthServiceLogPayload {
 
-    private String _class;
+    @JsonProperty("log_uuid")
+    private String logUUID;
+
+    @JsonProperty("log_type")
+    private Object logType;
+
+    private String ip;
+
     private String uri;
-    private String job;
-    private String userId;
-    private String userName;
-    private String userEmail;
-    private Object data;
-    private AuthServiceLogType logType;
+
+    private String method;
+
+    private Map<String, String> headers;
+
+    private String query;
+
+    @JsonProperty("request_user")
+    private LogUserInfo requestUser;
+
+    @JsonProperty("content_body")
+    private Object contentBody;
 
     @Builder
-    public AuthServiceLogPayload(AuthServiceLogType logType, String _class, String uri, String job, String userId, String userName, String userEmail, Object data) {
-        this.logType = logType;
-        this._class = _class;
+    public AuthServiceLogPayload(String logUUID, Map<String, String> headers, String uri, String query, String method, String ip, User requestUser, Object contentBody, Object logType) {
+        this.logUUID = logUUID;
         this.uri = uri;
-        this.job = job;
-        this.userId = userId;
-        this.userName = userName;
-        this.userEmail = userEmail;
-        this.data = data;
+        this.ip = ip;
+        this.method = method;
+        this.query = query;
+        this.headers = headers;
+        this.requestUser = new LogUserInfo(requestUser);
+        this.contentBody = contentBody;
+        this.logType = logType;
     }
 
-    public static AuthServiceLogPayload convertTo(
-            User user,
-            String uri,
-            String job,
-            AuthServiceLogType authServiceLogType,
-            String _class,
-            Object data) {
+    @NoArgsConstructor
+    @Getter
+    @ToString
+    private static class LogUserInfo {
 
-        if (user == null) {
-            user = User.builder()
-                    .id("none")
-                    .username("none")
-                    .email("none")
-                    .build();
+        private String id;
+        private String email;
+        private String username;
+
+        public LogUserInfo(User user) {
+
+            if (user == null) {
+                user = User.builder()
+                        .id("none")
+                        .username("none")
+                        .email("none")
+                        .build();
+            }
+
+            this.id = user.getId();
+            this.email = user.getEmail();
+            this.username = user.getUsername();
+
         }
 
-        return AuthServiceLogPayload.builder()
-                .logType(authServiceLogType)
-                ._class(_class)
-                .uri(uri)
-                .job(job)
-                .userId(user.getId())
-                .userName(user.getUsername())
-                .userEmail(user.getEmail())
-                .data(data)
-                .build();
-
     }
+
 
 }

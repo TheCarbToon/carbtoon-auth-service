@@ -1,8 +1,6 @@
 package kr.springboot.dcinside.cartoon.auth.messaging;
 
-import kr.springboot.dcinside.cartoon.auth.config.KafkaConfig;
 import kr.springboot.dcinside.cartoon.auth.domain.User;
-import kr.springboot.dcinside.cartoon.auth.payload.UserEventPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
