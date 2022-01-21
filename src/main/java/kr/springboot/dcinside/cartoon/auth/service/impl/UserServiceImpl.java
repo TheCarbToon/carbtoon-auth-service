@@ -1,8 +1,11 @@
 package kr.springboot.dcinside.cartoon.auth.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.springboot.dcinside.cartoon.auth.domain.Profile;
 import kr.springboot.dcinside.cartoon.auth.domain.Role;
 import kr.springboot.dcinside.cartoon.auth.domain.User;
+import kr.springboot.dcinside.cartoon.auth.dto.feign.response.AuthUserCreateFeignResponse;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignInRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignUpRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.response.ApiResponse;
@@ -10,6 +13,7 @@ import kr.springboot.dcinside.cartoon.auth.dto.response.JwtAuthenticationRespons
 import kr.springboot.dcinside.cartoon.auth.exception.BadRequestException;
 import kr.springboot.dcinside.cartoon.auth.exception.EmailAlreadyExistsException;
 import kr.springboot.dcinside.cartoon.auth.exception.UsernameAlreadyExistsException;
+import kr.springboot.dcinside.cartoon.auth.feign.client.UserServiceClient;
 import kr.springboot.dcinside.cartoon.auth.repo.UserRepository;
 import kr.springboot.dcinside.cartoon.auth.service.JwtTokenProvider;
 import kr.springboot.dcinside.cartoon.auth.service.UserService;
@@ -33,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
+    private final UserServiceClient userServiceClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public JwtAuthenticationResponse authenticateUser(SignInRequest signInRequest) {
@@ -110,6 +116,22 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
+        String jsonAuthUser = "";
+        try {
+            jsonAuthUser = objectMapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            log.error("회원가입 json to string failed!! id is => {}", user.getUsername());
+        }
+
+        String test = userServiceClient.createUser(AuthUserCreateFeignResponse.builder()
+                .jsonAuthUser(jsonAuthUser)
+                .lbServiceName("AUTH-SERVICE")
+                .build());
+        if (test.equals("bad")) {
+            log.error("USER-SERVICE CREATE USER FAILURE!!! id is => {}",
+                    user.getUsername());
+            throw new RuntimeException("실패실패");
+        }
 
     }
 
