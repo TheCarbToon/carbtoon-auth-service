@@ -9,7 +9,7 @@ public interface UserEventStream {
     String OUTPUT = "cartoonUserChanged";
 
     /**
-     * Output Deprecated -> UserEventKafkaStream으로 변경
+     * Output Deprecated -> StreamBridge
      * @return
      */
     @Output(OUTPUT)

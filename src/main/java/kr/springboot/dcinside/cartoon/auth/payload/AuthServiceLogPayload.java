@@ -9,6 +9,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class AuthServiceLogPayload {
 
     @JsonProperty("log_uuid")

@@ -1,8 +1,10 @@
 package kr.springboot.dcinside.cartoon.auth.messaging;
 
-import kr.springboot.dcinside.cartoon.auth.config.KafkaConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.apache.kafka.common.errors.SerializationException;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -15,22 +17,28 @@ import java.util.UUID;
 @Slf4j
 public class KafkaLogProducer {
 
-    private final String AUTH_TOPIC = "carbtoon.auth";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private KafkaTemplate<String, Message> kafkaTemplate;
+    private final StreamBridge streamBridge;
 
-    public KafkaLogProducer() {
-        this.kafkaTemplate = new KafkaConfig().kafkaTemplate();
+    public KafkaLogProducer(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
     }
 
     @Async
     public void send(Object payload) {
-        Message<Object> message =
-                MessageBuilder
-                        .withPayload(payload)
-                        .setHeader(KafkaHeaders.MESSAGE_KEY, UUID.randomUUID().toString())
-                        .build();
-        kafkaTemplate.send(AUTH_TOPIC, message);
+        Message<Object> message = MessageBuilder
+                .withPayload(payload)
+                .setHeader("service_name", "AUTH-SERVICE")
+                .setHeader(KafkaHeaders.MESSAGE_KEY, UUID.randomUUID().toString())
+                .build();
+        String jsonMessage = "";
+        try {
+            jsonMessage = objectMapper.writeValueAsString(message);
+        } catch (JsonProcessingException e) {
+            throw new SerializationException(e);
+        }
+        streamBridge.send("carbtoonAuth-out-0", jsonMessage);
     }
 
 }

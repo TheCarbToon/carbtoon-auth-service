@@ -12,25 +12,26 @@ import org.springframework.messaging.Message;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 @Configuration
 public class KafkaConfig {
 
     private final String BOOTSTRAP_SERVERS_LOCATION = "localhost:9094";
 
-    @Bean
-    public KafkaTemplate<String, Message> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
+//    @Bean
+//    public KafkaTemplate<String, Message> kafkaTemplate() {
+//        return new KafkaTemplate<>(producerFactory());
+//    }
 
-    @Bean
-    public ProducerFactory<String, Message> producerFactory() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_LOCATION);
-        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "logstash");
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configs);
-    }
+//    @Bean
+//    public ProducerFactory<String, Message> producerFactory() {
+//        Map<String, Object> configs = new HashMap<>();
+//        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_LOCATION);
+//        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "logstash");
+//        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+//        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+//        return new DefaultKafkaProducerFactory<>(configs);
+//    }
 
 //    @Bean
 //    public ConsumerFactory<String, Message> consumerFactory() {

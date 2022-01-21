@@ -14,6 +14,23 @@ spring:
         locator:
           enabled: true
 
+    function:
+      definition: carbtoonAuth
+    stream:
+      kafka:
+        bindings:
+          carbtoonAuth-out-0:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.StringSerializer
+        binder:
+          brokers: localhost:9094
+      bindings:
+        carbtoonAuth-out-0: # (1)
+          destination: carbtoon.auth # topic
+          contentType: application/json
+
 eureka:
   client:
     service-url:
@@ -29,7 +46,7 @@ security:
     header: Authorization
     prefix: "Bearer "
     expiration: 604800
-#    expiration: 60
+    #    expiration: 60
     secret: /j7JOK1JQA+cqZhLQF7WVcOzrI0Et0pUZcjhe47ELqQ=
 
   service:

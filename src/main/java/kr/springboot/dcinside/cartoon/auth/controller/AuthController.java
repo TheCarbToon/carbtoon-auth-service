@@ -5,6 +5,7 @@ import kr.springboot.dcinside.cartoon.auth.dto.request.SignUpRequest;
 import kr.springboot.dcinside.cartoon.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class AuthController {
 
     /**
      * 로그인 & 토큰 발급
+     *
      * @param signInRequest
      * @return
      */
@@ -36,6 +38,7 @@ public class AuthController {
 
     /**
      * 회원가입
+     *
      * @param signUpRequest
      * @return
      */
@@ -55,6 +58,7 @@ public class AuthController {
 
     /**
      * TODO 리프레시 토큰으로 새로운 발급 만들어야함
+     *
      * @param refreshToken
      * @return
      */
@@ -66,11 +70,13 @@ public class AuthController {
 
     /**
      * 테스트용
+     *
      * @return
      */
     @GetMapping(value = "/secure")
-    public String getSecure() {
-        return "^o^";
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getSecure() {
+        return ResponseEntity.ok("secure pass!");
     }
 
 }

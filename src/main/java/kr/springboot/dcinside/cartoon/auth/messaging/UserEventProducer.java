@@ -14,12 +14,12 @@ public class UserEventProducer {
     private KafkaTemplate<String, Message> kafkaTemplate;
     private final String KAFKA_TOPIC = "carbtoon.user.event";
 
-    public UserEventProducer() {
-        this.kafkaTemplate = new KafkaConfig().kafkaTemplate();
-    }
+//    public UserEventProducer() {
+//        this.kafkaTemplate = new KafkaConfig().kafkaTemplate();
+//    }
 
-    public void send(Message message) {
-        kafkaTemplate.send(KAFKA_TOPIC, message);
-    }
+//    public void send(Message message) {
+//        kafkaTemplate.send(KAFKA_TOPIC, message);
+//    }
 
 }
