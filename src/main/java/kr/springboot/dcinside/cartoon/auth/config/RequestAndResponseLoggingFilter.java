@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 @Component
@@ -128,6 +129,10 @@ public class RequestAndResponseLoggingFilter extends OncePerRequestFilter {
                 contentObject = objectMapper.readTree(content);
             } catch (IOException e) {
                 log.error(e.getMessage());
+                Map<String, String> body = new ConcurrentHashMap<>();
+                body.put("body", String.valueOf(content));
+                contentObject = body;
+                log.info("log uuid -> {}, body can't deserializer so made body map, value is -> {}", logUUID , body);
             }
             kafkaLogProducer.send(
                     AuthServiceLogPayload.builder()

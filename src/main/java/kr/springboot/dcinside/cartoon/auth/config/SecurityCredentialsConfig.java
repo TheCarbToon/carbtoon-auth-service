@@ -27,9 +27,7 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
 
     private final JwtTokenAuthenticationFilter jwtTokenAuthenticationFilter;
-
-    private final RequestAndResponseLoggingFilter loggingFilter;
-
+    
     @Value("${security.service.username}")
     private String serviceUsername;
 
@@ -46,6 +44,7 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(jwtTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
+                .antMatchers(HttpMethod.PUT, "/auth/users/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/secure").hasRole("USER")

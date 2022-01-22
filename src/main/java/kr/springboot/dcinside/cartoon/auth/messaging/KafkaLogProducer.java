@@ -17,6 +17,8 @@ import java.util.UUID;
 @Slf4j
 public class KafkaLogProducer {
 
+    private final String SERVICE_NAME = "AUTH-SERVICE";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final StreamBridge streamBridge;
@@ -29,7 +31,7 @@ public class KafkaLogProducer {
     public void send(Object payload) {
         Message<Object> message = MessageBuilder
                 .withPayload(payload)
-                .setHeader("service_name", "AUTH-SERVICE")
+                .setHeader("service_name", SERVICE_NAME)
                 .setHeader(KafkaHeaders.MESSAGE_KEY, UUID.randomUUID().toString())
                 .build();
         String jsonMessage = "";

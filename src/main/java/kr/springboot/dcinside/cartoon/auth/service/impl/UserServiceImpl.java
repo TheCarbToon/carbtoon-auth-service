@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.springboot.dcinside.cartoon.auth.domain.Profile;
 import kr.springboot.dcinside.cartoon.auth.domain.Role;
 import kr.springboot.dcinside.cartoon.auth.domain.User;
-import kr.springboot.dcinside.cartoon.auth.dto.feign.response.AuthUserCreateFeignResponse;
+import kr.springboot.dcinside.cartoon.auth.dto.feign.request.AuthUserCreateFeignRequest;
+import kr.springboot.dcinside.cartoon.auth.dto.feign.request.UserDisplayNameUpdateFeignRequest;
+import kr.springboot.dcinside.cartoon.auth.dto.feign.request.UserPasswordUpdateFeignRequest;
+import kr.springboot.dcinside.cartoon.auth.dto.feign.request.UserProfilePictureUpdateFeignRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignInRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.request.SignUpRequest;
 import kr.springboot.dcinside.cartoon.auth.dto.response.ApiResponse;
 import kr.springboot.dcinside.cartoon.auth.dto.response.JwtAuthenticationResponse;
 import kr.springboot.dcinside.cartoon.auth.exception.BadRequestException;
 import kr.springboot.dcinside.cartoon.auth.exception.EmailAlreadyExistsException;
+import kr.springboot.dcinside.cartoon.auth.exception.ResourceNotFoundException;
 import kr.springboot.dcinside.cartoon.auth.exception.UsernameAlreadyExistsException;
 import kr.springboot.dcinside.cartoon.auth.feign.client.UserServiceClient;
 import kr.springboot.dcinside.cartoon.auth.repo.UserRepository;
@@ -33,6 +37,7 @@ import java.util.HashSet;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final String lbServiceName = "AUTH-SERVICE";
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -123,9 +128,9 @@ public class UserServiceImpl implements UserService {
             log.error("회원가입 json to string failed!! id is => {}", user.getUsername());
         }
 
-        String test = userServiceClient.createUser(AuthUserCreateFeignResponse.builder()
+        String test = userServiceClient.createUser(AuthUserCreateFeignRequest.builder()
                 .jsonAuthUser(jsonAuthUser)
-                .lbServiceName("AUTH-SERVICE")
+                .lbServiceName(lbServiceName)
                 .build());
         if (test.equals("bad")) {
             log.error("USER-SERVICE CREATE USER FAILURE!!! id is => {}",
@@ -135,4 +140,63 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+    @Override
+    public boolean updateUserProfilePictureUri(UserProfilePictureUpdateFeignRequest userProfilePictureUpdateFeignRequest) {
+
+        log.info("유저 프로필 사진 업데이트 user id is => {}", userProfilePictureUpdateFeignRequest.getId());
+
+        if (!userProfilePictureUpdateFeignRequest.getLbServiceName().equals("USER-SERVICE")) return false;
+
+        userRepository.findById(userProfilePictureUpdateFeignRequest.getId())
+                .map(user -> {
+                    user.getUserProfile().setProfilePictureUrl(userProfilePictureUpdateFeignRequest.getProfilePictureUri());
+                    userRepository.save(user);
+                    return user;
+                })
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(String.format("%s의 사용자를 찾을수 없음.", userProfilePictureUpdateFeignRequest.getId()))
+                );
+
+        return true;
+    }
+
+    @Override
+    public boolean updateUserPassword(UserPasswordUpdateFeignRequest userPasswordUpdateFeignRequest) {
+        log.info("유저 비밀번호 업데이트 user id is => {}", userPasswordUpdateFeignRequest.getId());
+
+        if (!userPasswordUpdateFeignRequest.getLbServiceName().equals("USER-SERVICE")) return false;
+
+        userRepository.findById(userPasswordUpdateFeignRequest.getId())
+                .map(user -> {
+                    user.setPassword(userPasswordUpdateFeignRequest.getPassword());
+                    userRepository.save(user);
+                    return user;
+                })
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(String.format("%s의 사용자를 찾을수 없음.", userPasswordUpdateFeignRequest.getId()))
+                );
+
+        return true;
+    }
+
+    @Override
+    public boolean updateUserDisplayName(UserDisplayNameUpdateFeignRequest userDisplayNameUpdateFeignRequest) {
+
+        log.info("유저 닉네임 업데이트 user id is => {}", userDisplayNameUpdateFeignRequest.getId());
+
+        if (!userDisplayNameUpdateFeignRequest.getLbServiceName().equals("USER-SERVICE")) return false;
+
+        userRepository.findById(userDisplayNameUpdateFeignRequest.getId())
+                .map(user -> {
+                    user.getUserProfile().setDisplayName(userDisplayNameUpdateFeignRequest.getDisplayName());
+                    userRepository.save(user);
+                    return user;
+                })
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(String.format("%s의 사용자를 찾을수 없음.", userDisplayNameUpdateFeignRequest.getId()))
+                );
+
+        return true;
+    }
 }
