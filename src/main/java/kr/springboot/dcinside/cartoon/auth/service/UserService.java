@@ -15,6 +15,10 @@ public interface UserService {
 
     ApiResponse signUpUser(SignUpRequest signUpRequest);
 
+    void emailAuthSave(User user, String uuid);
+
+    ApiResponse emailAuth(String uuid);
+
     JwtAuthenticationResponse authenticateUser(SignInRequest signInRequest);
 
     boolean updateUserProfilePictureUri(UserProfilePictureUpdateFeignRequest userProfilePictureUpdateFeignRequest);

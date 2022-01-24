@@ -2,6 +2,7 @@ package kr.springboot.dcinside.cartoon.auth.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.springboot.dcinside.cartoon.auth.domain.EmailAuth;
 import kr.springboot.dcinside.cartoon.auth.domain.Profile;
 import kr.springboot.dcinside.cartoon.auth.domain.Role;
 import kr.springboot.dcinside.cartoon.auth.domain.User;
@@ -18,7 +19,9 @@ import kr.springboot.dcinside.cartoon.auth.exception.EmailAlreadyExistsException
 import kr.springboot.dcinside.cartoon.auth.exception.ResourceNotFoundException;
 import kr.springboot.dcinside.cartoon.auth.exception.UsernameAlreadyExistsException;
 import kr.springboot.dcinside.cartoon.auth.feign.client.UserServiceClient;
+import kr.springboot.dcinside.cartoon.auth.repo.EmailAuthRepository;
 import kr.springboot.dcinside.cartoon.auth.repo.UserRepository;
+import kr.springboot.dcinside.cartoon.auth.service.EmailService;
 import kr.springboot.dcinside.cartoon.auth.service.JwtTokenProvider;
 import kr.springboot.dcinside.cartoon.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -44,6 +48,8 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider tokenProvider;
     private final UserServiceClient userServiceClient;
     private final ObjectMapper objectMapper;
+    private final EmailService emailService;
+    private final EmailAuthRepository emailAuthRepository;
 
     @Override
     public JwtAuthenticationResponse authenticateUser(SignInRequest signInRequest) {
@@ -68,6 +74,8 @@ public class UserServiceImpl implements UserService {
     public ApiResponse signUpUser(SignUpRequest signUpRequest) {
         log.info("회원가입 요청 ID -> ({})", signUpRequest.getUsername());
 
+        String authUuid = UUID.randomUUID().toString();
+
         User user = User
                 .builder()
                 .username(signUpRequest.getUsername())
@@ -85,9 +93,51 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException(e.getMessage());
         }
 
+        emailAuthSave(user, authUuid);
+
         return ApiResponse.builder()
                 .success(true)
                 .message("회원가입 성공!")
+                .build();
+    }
+
+    @Override
+    public void emailAuthSave(User user, String uuid) {
+
+        emailAuthRepository.save(EmailAuth.builder()
+                .username(user.getUsername())
+                .auth(false)
+                .uuid(uuid)
+                .build());
+
+        emailService.sendAuthMail(user.getEmail(), uuid);
+
+        log.info("유저 {} , 인증 메일 전송 완료 => {}", user.getEmail(), uuid);
+
+    }
+
+    @Override
+    public ApiResponse emailAuth(String uuid) {
+
+        emailAuthRepository.findByUuid(uuid)
+                .map(emailAuth -> {
+                    emailAuth.setAuth(true);
+                    emailAuthRepository.save(emailAuth);
+                    userRepository.findByUsername(emailAuth.getUsername())
+                            .map(user -> {
+                                user.setActive(true);
+                                userRepository.save(user);
+                                return user;
+                            });
+                    return emailAuth;
+                })
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(String.format("%s의 인증할 데이터를 찾을수 없음.", uuid))
+                );
+
+        return ApiResponse.builder()
+                .success(true)
+                .message("이메일 인증 성공!")
                 .build();
     }
 
@@ -113,7 +163,7 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .password(passwordEncoder.encode(user.getPassword()))
                 .email(user.getEmail())
-                .active(true)
+                .active(false) // User service is true
                 .userProfile(user.getUserProfile())
                 .roles(new HashSet<>() {{
                     add(Role.USER);

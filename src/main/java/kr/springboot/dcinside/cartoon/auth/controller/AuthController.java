@@ -100,4 +100,9 @@ public class AuthController {
         return userService.updateUserProfilePictureUri(userProfilePictureUpdateFeignRequest);
     }
 
+    @GetMapping("/email/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> emailCheck(@PathVariable String uuid) {
+        return ResponseEntity.ok(userService.emailAuth(uuid));
+    }
+
 }

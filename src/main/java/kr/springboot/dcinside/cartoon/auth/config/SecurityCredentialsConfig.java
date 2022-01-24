@@ -47,6 +47,7 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/auth/users/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
+                .antMatchers(HttpMethod.GET, "/auth/email/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/secure").hasRole("USER")
                 .anyRequest().authenticated();
     }

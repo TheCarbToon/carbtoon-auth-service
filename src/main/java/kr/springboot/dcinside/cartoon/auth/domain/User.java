@@ -47,6 +47,10 @@ public class User {
         this.userProfile = userProfile;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public User(User user) {
         this.id = user.id;
         this.username = user.username;
