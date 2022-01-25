@@ -4,6 +4,7 @@ import kr.springboot.dcinside.cartoon.auth.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender emailSender;
 
+    @Async
     @Override
     public void sendAuthMail(String to, String uuid) {
         SimpleMailMessage message = new SimpleMailMessage();

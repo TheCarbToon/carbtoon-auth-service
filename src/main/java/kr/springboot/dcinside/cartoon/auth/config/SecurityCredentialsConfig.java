@@ -44,11 +44,11 @@ public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(jwtTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.PUT, "/auth/users/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/signup").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/signin").permitAll()
-                .antMatchers(HttpMethod.GET, "/auth/email/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/auth/secure").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/api/auth/users/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/auth/email/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/auth/secure").hasRole("USER")
                 .anyRequest().authenticated();
     }
 
